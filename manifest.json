@@ -1,5 +1,5 @@
 {
-    "manifest_version": 1,
+    "manifest_version": 2,
     "name": "BrowserTracker",
     "description": "This extension records and displays statistics about browsing history.",
     "version": "1.0",

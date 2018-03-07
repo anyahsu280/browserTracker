@@ -1,33 +1,21 @@
-var prefs = {};
+var server = 'http://localhost:8080';
 
-chrome.storage.local.get({callback: 'http://localhost:8080', key: 'chrome'}, function(o) { prefs = o; });
-
-chrome.storage.onChanged.addListener(function(changes) {
-    for (key in changes) {
-        prefs[key] = changes[key].newValue;
-    }
-});
-
-function log(url, title, favicon){
+function log(url){
     var data = JSON.stringify({
-        url: url, time: Date.now(),
-        title: title, key: prefs.key,
-        favicon: favicon
+        url: url,
+        time: Date.now()
     });
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", prefs.callback);
+    xhr.open("POST", server + "/log");
     xhr.send(data);
 }
 
 chrome.tabs.onActivated.addListener(function (activeInfo) {
-    //send end time for previous record (if there is one)
-    //create new record for current page, end time = null
-
     chrome.tabs.get(activeInfo.tabId, function(tab) {
         if (tab.status === "complete" && tab.active) {
             chrome.windows.get(tab.windowId, {populate: false}, function(window) {
                 if (window.focused) {
-                    log(tab.url, tab.title, tab.favIconUrl || null);
+                    log(tab.url);
                 }
             });
         }
@@ -35,32 +23,31 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
 });
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-    //send end time for previous record (if there is one)
-    //create new record for current page, end time = null
-
     if (changeInfo.status === "complete" && tab.active) {
         chrome.windows.get(tab.windowId, {populate: false}, function(window) {
             if (window.focused) {
-                log(tab.url, tab.title, tab.favIconUrl || null);
+                log(tab.url);
             }
         });
     }
 });
 
-chrome.windows.onFocusChanged.addListener(function (windowId) {
-    if (windowId == chrome.windows.WINDOW_ID_NONE) {
-        //send end time for current record
-        log(null, null, null);
-    } else {
-        //new record
-        chrome.windows.get(windowId, {populate: true}, function(window) {
-            if (window.focused) {
-                chrome.tabs.query({active: true, windowId: windowId}, function (tabs) {
-                    if (tabs[0].status === "complete") {
-                        log(tabs[0].url, tabs[0].title, tabs[0].favIconUrl || null);
-                    }
-                });
-            }
-        });
-    }
-});
+//TODO: send end times at appropriate times
+
+// chrome.windows.onFocusChanged.addListener(function (windowId) {
+//     if (windowId == chrome.windows.WINDOW_ID_NONE) {
+//         //send end time for current record
+//         log(null, null, null);
+//     } else {
+//         //new record
+//         chrome.windows.get(windowId, {populate: true}, function(window) {
+//             if (window.focused) {
+//                 chrome.tabs.query({active: true, windowId: windowId}, function (tabs) {
+//                     if (tabs[0].status === "complete") {
+//                         log(tabs[0].url, tabs[0].title, tabs[0].favIconUrl || null);
+//                     }
+//                 });
+//             }
+//         });
+//     }
+// });
