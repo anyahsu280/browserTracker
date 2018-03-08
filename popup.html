@@ -21,11 +21,23 @@
                     <th scope="col">Percent</th>
                   </tr>
                 </thead>
-                <tbody id="stats_tbody"></tbody>
+                <tbody id  = "stats_tbody", class = "this">
+                <tr>
+                    <td>January</td>
+                    
+                 </tr>
+                 <tr>
+                     <td>February</td>
+                 </tr>
+                 </tbody>
               </table>
           </div>
           <button type="button" id = "reset">Clear All!</button>
           <button id="test">Get Top 5 In Last Day</button>
+          <h3>Change Number of Websites Shown</h3>
+
+          <input type="number" id="views" min = "1" max = "20" value="2">          
+          <button onclick="doSubmit();">Change</button>
         <p id="response"></p>
         <!--
             Input form & results table
