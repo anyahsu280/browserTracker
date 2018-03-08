@@ -3,14 +3,33 @@
     <head>
         <title>Browser Tracker</title>
         <script src="popup.js"></script>
+        <link rel="stylesheet" href="style.css"/>
     </head>
     <body>
         <h1>Browser Tracker</h1>
+        <form>
+            <input type="radio" name="time" value="1" checked>Today
+            <input type="radio" name="time" value="7"> This Week
+            <input type="radio" name="time" value="30">This Month
+          </form>
+          <div id = "websites">
+            <table id="stats">
+                <thead>
+                  <tr>
+                    <th scope="col">Site</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Percent</th>
+                  </tr>
+                </thead>
+                <tbody id="stats_tbody"></tbody>
+              </table>
+          </div>
+          <button type="button" id = "reset">Clear All!</button>
+          <button id="test">Get Top 5 In Last Day</button>
+        <button id="reset">Reset History</button>
+        <p id="response"></p>
         <!--
             Input form & results table
         -->
-        <button id="test">Get Top 5 In Last Day</button>
-        <button id="reset">Reset History</button>
-        <p id="response"></p>
     </body>
 </html>
