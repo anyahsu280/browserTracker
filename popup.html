@@ -7,29 +7,23 @@
     </head>
     <body>
         <h1>Browser Tracker</h1>
-        <form name= "days" >
+        <div class = "switch">
+        <form name= "days" class = "quality" >
             <input type="radio" name="time" value="1" checked>Today
             <input type="radio" name="time" value="7"> This Week
             <input type="radio" name="time" value="30">This Month
           </form>
+        </div>
           <div id = "websites">
             <table id="stats">
                 <thead>
                   <tr>
                     <th scope="col">Site</th>
                     <th scope="col">Time</th>
-                    <th scope="col">Percent</th>
+                    <th scope="col">Visits</th>
                   </tr>
                 </thead>
-                <tbody id  = "stats_tbody", class = "this">
-                <tr>
-                    <td>January</td>
-                    
-                 </tr>
-                 <tr>
-                     <td>February</td>
-                 </tr>
-                 </tbody>
+                <tbody id  = "stats_tbody", class = "this"></tbody>
               </table>
           </div>
           <button type="button" id = "reset">Clear All!</button>
