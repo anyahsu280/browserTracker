@@ -17,8 +17,12 @@ create = '''CREATE TABLE IF NOT EXISTS History (
                     EndTime TEXT
             );'''
 insert = 'INSERT INTO History values (?, ?, ?)'
+getLastInsertID = 'SELECT last_insert_rowid();'
 # update = '' TODO
 getAll = 'SELECT * FROM History'
+getRowID = '''SELECT rowid FROM History
+              WHERE URL = ?
+              ORDER BY StartTime DESC'''
 getTopSites = '''SELECT URL FROM History
                  WHERE StartTime > ?'''
 drop = 'DROP TABLE History'
@@ -84,8 +88,16 @@ class Handler(BaseHTTPRequestHandler):
             length = int(self.headers['Content-Length'])
             data = json.loads(self.rfile.read(length))
             time = datetime.utcfromtimestamp(data["time"] / 1000.)
-            self.con.execute(insert, (data["url"], time, ""))
-            response = "Site logged."
+            self.con.execute(insert, (data["url"], time, ""));
+            response = json.dumps({
+                "siteRecordID" : self.con.execute(getLastInsertID).fetchone()[0]
+            })
+        elif self.path == "/recordID":
+            length = int(self.headers['Content-Length'])
+            data = json.loads(self.rfile.read(length))
+            response = json.dumps({
+                "siteRecordID" : self.con.execute(getRowID, (data["url"],)).fetchone()[0]
+            })
         #elif self.path == "/update" TODO
         elif self.path == "/reset": #drops and recreates table
             self.con.execute(drop)

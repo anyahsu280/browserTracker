@@ -8,11 +8,17 @@
         "default_popup": "popup.html"
     },
     "background": {
-        "scripts": ["tracking.js"]
+        "scripts": [
+            "jquery-3.3.1.min.js",
+            "config.js",
+            "tracking.js"
+        ]
     },
     "permissions": [
         "activeTab",
         "tabs",
-        "storage"
+        "storage",
+        "idle",
+        "alarms"
     ]
 }
