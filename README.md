@@ -1,5 +1,6 @@
 # BrowserTracker
 ## About
+### By: Anya Hsu & Natalia Abrosimova
 This is a simple Chrome extension that tracks a user's page visits and total time on a page, and is able to produce a report about the user's top sites by total time. `tracker.js` runs in the background to record page information and send it to a Python server, which stores the data in a SQLite database. The popup accessible through the extension's browser action allows the user to request different numbers of top sites over a variety of time ranges.
 
 ## Setup
