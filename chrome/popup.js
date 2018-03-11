@@ -16,25 +16,27 @@
     if (!clearVal) {
       for (var key in json) {
         var item = json[key];
-        row = addRow(item["icon"], item["URL"], item["totalTime"], item["pageVisits"]);
+        row = addRow(item["favicon"], item["URL"], item["totalTime"], item["pageVisits"]);
         tbody.appendChild(row);
       }
     }
   }
   // take in image, and url, time and visits as string, returns a row object
-  addRow = function (image, url, time, visits) {
+  addRow = function (imageURL, url, time, visits) {
     var row = document.createElement("tr");
-    row.appendChild(imageCell(image));
+    row.appendChild(imageCell(imageURL));
     row.appendChild(urlCell(url));
     row.appendChild(getCell(time));
     row.appendChild(getCell(visits));
     return row;
   }
   //return Cell with image
-  imageCell = function (image) {
-    cell = document.createElement("td");
+  imageCell = function (imageURL) {
+    var cell = document.createElement("td");
+    var image = document.createElement("img");
     image.height = 10;
     image.weight = 10;
+    image.src = imageURL;
     cell.appendChild(image);
     return cell;
   }
@@ -103,6 +105,9 @@
         getWebsites();
       }
     };
+
+    var change = document.getElementById('change');
+    change.onclick = doSubmit;
     display(null, false);
   }, false);
 })();
