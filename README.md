@@ -15,5 +15,8 @@ This is a simple Chrome extension that tracks a user's page visits and total tim
     - This server uses `localhost:8080` -- if you need to change the port or server address, it needs to be changed in `server.py`, `chrome/popup.js`, and `chrome/config.js`.
 5. Start accessing different pages/tabs in Chrome, and the command line window should be logging basic info about the requests coming in if it is working correctly.
 
+## Using BrowserTracker
+After installing the extension and starting the server, you can begin using the extension. Once it is installed it will start tracking all page visits in Chrome, and the amount of time spent on those pages. To view browsing statistics, click on the extension's icon at the top right corner of the browser. Your top websites are displayed, ranked by total time spent on pages within that site. There are a couple parameters that can be changed.
+
 ## Acknowledgements
 The tracking and server code is based on GitHub user Thibauth's [browsing-activity-tracker](https://github.com/Thibauth/browsing-activity-tracker). The code for keeping track of the total time on a page borrows from GitHub user navjagpal's [browser-timetracker](https://github.com/navjagpal/browser-timetracker).
