@@ -1,14 +1,12 @@
 //TODO:
-// - send current time to server to assign as endtime for current siteRecordID
 // - in server.py:
 //     - implement "update with end time"
 //     - change topX to count total time and rank by total time
-
+// - stretch: figure out how to only query for recordID in updateTimeWithCurrentTab when necessary, not always
 
 var config = config();
 var current = {
     siteRecordID: null,
-    idle: false,
     tabURL: null
 }
 
@@ -34,9 +32,7 @@ function log(url){
     var xhr = new XMLHttpRequest();
     xhr.open("POST", config.server + "/log");
     xhr.onload = function() {
-        recordID = JSON.parse(xhr.response).siteRecordID;
-        console.log("just posted record ID " + recordID);
-        deferred.resolve(recordID);
+        deferred.resolve(JSON.parse(xhr.response).siteRecordID);
     }
     xhr.send(data);
 
@@ -116,19 +112,14 @@ function updatePreviousAndSwitchToCurrent(siteRecordID) {
 //sends updated "end" time for current.siteRecordID, if current.siteRecordID is not null
 function updateTime(siteRecordID) {
     if (!current.siteRecordID) return;
+
     var data = JSON.stringify({
-        url: url,
+        siteRecordID: siteRecordID,
         time: Date.now()
     });
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", config.server + "/log");
-    xhr.onload = function() {
-        recordID = JSON.parse(xhr.response).siteRecordID;
-        console.log("just posted record ID " + recordID);
-        deferred.resolve(recordID);
-    }
+    xhr.open("POST", config.server + "/update");
     xhr.send(data);
-    //TODO: send current time to server for current.site
 }
 
 //updates with current tab -- used if current tab url isn't straightforward to
@@ -143,10 +134,7 @@ function updateTimeWithCurrentTab() {
             //use POST because I didn't want to send url as parameter in request url
             xhr.open("POST", config.server + "/recordID");
             xhr.onload = function() {
-                recordID = JSON.parse(xhr.response).siteRecordID;
-                console.log("current url is: " + url);
-                console.log("current url has recordID: " + recordID);
-                updatePreviousAndSwitchToCurrent(recordID);
+                updatePreviousAndSwitchToCurrent(JSON.parse(xhr.response).siteRecordID);
             }
             xhr.send(data);
         }
