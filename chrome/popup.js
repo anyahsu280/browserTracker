@@ -2,6 +2,7 @@
   //how many sites displayed and how many days to consider
   var numberOfViews = 10;
   var days = 1;
+  var server = "http://localhost:8080";
 
  //takes in string json object and boolean - to clear or not
   display = function (data, clearVal) {
@@ -90,8 +91,6 @@
   }
   //set up buttons and initial view
   document.addEventListener('DOMContentLoaded', function () {
-    // --- Send request example: ---
-    var server = "http://localhost:8080";
     var resetButton = document.getElementById('reset');
     resetButton.onclick = function () {
       clear();
