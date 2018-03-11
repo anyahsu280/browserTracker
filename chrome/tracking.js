@@ -1,6 +1,7 @@
 //TODO:
 // - in server.py:
 //     - change topX to count total time and rank by total time
+// - ensure that new record is created when navigating back to window, and same tab is open
 // - stretch: figure out how to only query for recordID in updateTimeWithCurrentTab when necessary, not always
 
 var config = config();
@@ -27,6 +28,7 @@ function log(url){
 
     console.log("POST");
     var data = JSON.stringify({
+        favicon: "cloud-computing.png", //TODO
         url: url,
         time: Date.now()
     });
