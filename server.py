@@ -13,12 +13,11 @@ database = 'browserTracker.db'
 
 # SQL Queries
 create = '''CREATE TABLE IF NOT EXISTS History (
-                    Favicon TEXT NOT NULL,
                     URL TEXT NOT NULL,
                     StartTime TEXT NOT NULL,
                     EndTime TEXT
             );'''
-insert = 'INSERT INTO History values (?, ?, ?, ?)'
+insert = 'INSERT INTO History values (?, ?, ?)'
 getLastInsertID = 'SELECT last_insert_rowid();'
 update = '''UPDATE History
             SET EndTime = ?
@@ -34,20 +33,30 @@ drop = 'DROP TABLE History'
 # array of base URLs to ignore
 ignoreBaseURLs = ['newtab']
 
+def millisecondsToHoursMinutesSecondsString(milliseconds):
+    seconds = (milliseconds/1000) % 60
+    seconds = int(seconds)
+    seconds = "0" + str(seconds) if seconds < 10 else str(seconds)
+    minutes = (milliseconds/(1000*60)) % 60
+    minutes = int(minutes)
+    minutes = "0" + str(minutes) if minutes < 10 else str(minutes)
+    hours = (milliseconds/(1000*60*60)) % 24
+    hours = int(hours)
+    hours = "0" + str(hours) if hours < 10 else str(hours)
+    return "%s:%s:%s" % (hours, minutes, seconds)
+
 # get top X sites from the sqlite cursor
 def getTopX(sites, cursor):
     topBaseURLsByTime = {}
     baseURLPageVisits = {}
-    baseURLFavicons = {}
 
     for row in cursor:
-        baseURL = str(urlparse(row[1])[1])
-        time = int(row[3]) - int(row[2])
+        baseURL = str(urlparse(row[0])[1])
+        time = int(row[2]) - int(row[1])
         if baseURL not in ignoreBaseURLs:
             if baseURL not in topBaseURLsByTime:
                 topBaseURLsByTime[baseURL] = 0
                 baseURLPageVisits[baseURL] = 0
-                baseURLFavicons[baseURL] = row[0]
             topBaseURLsByTime[baseURL] += time
             baseURLPageVisits[baseURL] += 1
 
@@ -56,12 +65,10 @@ def getTopX(sites, cursor):
     # convert only top X sites into response payload
     topX = []
     for i in range(sites if sites <= len(topBaseURLsByTime) else len(topBaseURLsByTime)):
-        url = topBaseURLsByTime[i][0]
         topX.append({
-            "favicon" : baseURLFavicons[url],
-            "URL" : url,
-            "totalTime" : topBaseURLsByTime[i][1],
-            "pageVisits" : baseURLPageVisits[url]
+            "URL" : topBaseURLsByTime[i][0],
+            "totalTime" : millisecondsToHoursMinutesSecondsString(topBaseURLsByTime[i][1]),
+            "pageVisits" : baseURLPageVisits[topBaseURLsByTime[i][0]]
         })
     return json.dumps(topX)
 
@@ -100,7 +107,7 @@ class Handler(BaseHTTPRequestHandler):
         data = json.loads(self.rfile.read(length).decode("utf-8")) if self.path != "/reset" else ""
 
         if self.path == "/log": # log page visit
-            self.con.execute(insert, (data["favicon"], data["url"], data["time"], ""))
+            self.con.execute(insert, (data["url"], data["time"], data["time"]))
             response = json.dumps({
                 "siteRecordID" : self.con.execute(getLastInsertID).fetchone()[0]
             })
