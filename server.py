@@ -1,7 +1,7 @@
-from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
+from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
 from datetime import datetime, timedelta
-from urlparse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs
 import sqlite3
 import operator
 
@@ -40,12 +40,12 @@ def getTopX(sites, cursor):
     for row in cursor:
         baseURL = str(urlparse(row[0])[1])
         if baseURL not in ignoreBaseURLS:
-            if not topURLs.has_key(baseURL):
+            if baseURL not in topURLS:
                 topURLs[baseURL] = 0;
             topURLs[baseURL] += 1;
 
     # sort topURLs by pageVisits in descending order
-    topURLs = sorted(topURLs.items(), key=operator.itemgetter(1), reverse=True)
+    topURLs = sorted(list(topURLs.items()), key=operator.itemgetter(1), reverse=True)
 
     # convert only top X sites into response payload
     topX = []
@@ -67,7 +67,7 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
 
         if self.path == "/all": # /all is for testing purposes only
-            response = self.con.execute(getAll).fetchall();
+            response = json.dumps(self.con.execute(getAll).fetchall())
         elif self.path.startswith("/topSites"):
             data = parse_qs(self.path.split('?')[1]);
             today = datetime.utcfromtimestamp(int(data['currentDate'][0]) / 1000.)
@@ -80,7 +80,7 @@ class Handler(BaseHTTPRequestHandler):
             self.con.execute(create)
             response = "Reset history."
 
-        self.wfile.write(response)
+        self.wfile.write(response.encode())
         self.con.commit()
         return
 
@@ -90,7 +90,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
         length = int(self.headers['Content-Length'])
-        data = json.loads(self.rfile.read(length))
+        data = json.loads(self.rfile.read(length).decode("utf-8"))
 
         if self.path == "/log": # log page visit
             time = datetime.utcfromtimestamp(data["time"] / 1000.)
@@ -110,7 +110,7 @@ class Handler(BaseHTTPRequestHandler):
             self.con.execute(create)
             response = "Reset history."
 
-        self.wfile.write(response);
+        self.wfile.write(response.encode());
         self.con.commit()
         return
 

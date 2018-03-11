@@ -4,7 +4,7 @@ This is a simple Chrome extension that tracks a user's page visits and total tim
 
 ## Setup
 1. Download repository
-2. Install `python`
+2. Install python, version 3
 3. Install extension:
     1. Navigate to `chrome://extensions` in chrome
     2. Check the "Developer mode" checkbox, so that the "Load unpacked extension..." option appears
