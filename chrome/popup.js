@@ -34,8 +34,8 @@
   imageCell = function (imageURL) {
     var cell = document.createElement("td");
     var image = document.createElement("img");
-    image.height = 10;
-    image.weight = 10;
+    image.height = 15;
+    image.weight = 15;
     image.src = imageURL;
     cell.appendChild(image);
     return cell;
@@ -87,7 +87,7 @@
     var xhr = new XMLHttpRequest();
     xhr.open("POST", server + "/reset");
     xhr.onload = function () {
-      display(xhr.response, true);
+      display(null, true);
     }
     xhr.send();
   }
