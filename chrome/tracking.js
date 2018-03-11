@@ -41,13 +41,6 @@ function log(url){
     return deferred.promise();
 }
 
-//updates time for previous siteRecordID, then updates current.siteRecordID to current siteRecordID
-function updatePreviousAndSwitchToCurrent(siteRecordID) {
-    updateTime(current.siteRecordID); //aka send current time to server
-    console.log("setting current.siteRecordID to " + siteRecordID);
-    current.siteRecordID = siteRecordID || null;
-};
-
 //sends updated "end" time for current.siteRecordID, if current.siteRecordID is not null
 function updateTime(siteRecordID) {
     if (!current.siteRecordID) return;
@@ -60,6 +53,13 @@ function updateTime(siteRecordID) {
     xhr.open("POST", config.server + "/update");
     xhr.send(data);
 }
+
+//updates time for previous siteRecordID, then updates current.siteRecordID to current siteRecordID
+function updatePreviousAndSwitchToCurrent(siteRecordID) {
+    updateTime(current.siteRecordID); //aka send current time to server
+    console.log("setting current.siteRecordID to " + siteRecordID);
+    current.siteRecordID = siteRecordID || null;
+};
 
 //updates with current tab -- used if current tab url isn't straightforward to
 //determine in the context that this function is being called from
