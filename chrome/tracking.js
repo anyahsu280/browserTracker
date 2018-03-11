@@ -1,6 +1,5 @@
 //TODO:
 // - in server.py:
-//     - implement "update with end time"
 //     - change topX to count total time and rank by total time
 // - stretch: figure out how to only query for recordID in updateTimeWithCurrentTab when necessary, not always
 

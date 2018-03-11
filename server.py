@@ -18,7 +18,9 @@ create = '''CREATE TABLE IF NOT EXISTS History (
             );'''
 insert = 'INSERT INTO History values (?, ?, ?)'
 getLastInsertID = 'SELECT last_insert_rowid();'
-# update = '' TODO
+update = '''UPDATE History
+            SET EndTime = ?
+            WHERE rowid = ?'''
 getAll = 'SELECT * FROM History'
 getRowID = '''SELECT rowid FROM History
               WHERE URL = ?
@@ -73,6 +75,10 @@ class Handler(BaseHTTPRequestHandler):
             input = (str(startDate),)
             response = self.con.execute(getTopSites, input)
             response = getTopX(int(data['sites'][0]), response)
+        elif self.path == "/reset": #drops and recreates table
+            self.con.execute(drop)
+            self.con.execute(create)
+            response = "Reset history."
 
         self.wfile.write(response)
         self.con.commit()
@@ -83,22 +89,22 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
+        length = int(self.headers['Content-Length'])
+        data = json.loads(self.rfile.read(length))
 
         if self.path == "/log": # log page visit
-            length = int(self.headers['Content-Length'])
-            data = json.loads(self.rfile.read(length))
             time = datetime.utcfromtimestamp(data["time"] / 1000.)
             self.con.execute(insert, (data["url"], time, ""));
             response = json.dumps({
                 "siteRecordID" : self.con.execute(getLastInsertID).fetchone()[0]
             })
         elif self.path == "/recordID":
-            length = int(self.headers['Content-Length'])
-            data = json.loads(self.rfile.read(length))
             response = json.dumps({
                 "siteRecordID" : self.con.execute(getRowID, (data["url"],)).fetchone()[0]
             })
-        #elif self.path == "/update" TODO
+        elif self.path == "/update":
+            time = datetime.utcfromtimestamp(data["time"] / 1000.)
+            self.con.execute(update, (time, data["siteRecordID"]))
         elif self.path == "/reset": #drops and recreates table
             self.con.execute(drop)
             self.con.execute(create)
