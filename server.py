@@ -30,7 +30,7 @@ getTopSites = '''SELECT URL FROM History
 drop = 'DROP TABLE History'
 
 # array of base URLs to ignore
-ignoreBaseURLS = ['newtab']
+ignoreBaseURLs = ['newtab']
 
 # get top X sites from the sqlite cursor
 def getTopX(sites, cursor):
@@ -39,8 +39,8 @@ def getTopX(sites, cursor):
     # iterate through rows, counting instances of each base URL
     for row in cursor:
         baseURL = str(urlparse(row[0])[1])
-        if baseURL not in ignoreBaseURLS:
-            if baseURL not in topURLS:
+        if baseURL not in ignoreBaseURLs:
+            if baseURL not in topURLs:
                 topURLs[baseURL] = 0;
             topURLs[baseURL] += 1;
 
