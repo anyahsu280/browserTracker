@@ -1,6 +1,6 @@
 (function () {
   //how many sites displayed and how many days to consider
-  var numberOfViews = 10;
+  var numberOfViews = 5;
   var days = 1;
   var server = "http://localhost:8080";
 
@@ -16,29 +16,18 @@
     if (!clearVal) {
       for (var key in json) {
         var item = json[key];
-        row = addRow(item["favicon"], item["URL"], item["totalTime"], item["pageVisits"]);
+        row = addRow(item["URL"], item["totalTime"], item["pageVisits"]);
         tbody.appendChild(row);
       }
     }
   }
   // take in image, and url, time and visits as string, returns a row object
-  addRow = function (imageURL, url, time, visits) {
+  addRow = function (url, time, visits) {
     var row = document.createElement("tr");
-    row.appendChild(imageCell(imageURL));
     row.appendChild(urlCell(url));
     row.appendChild(getCell(time));
     row.appendChild(getCell(visits));
     return row;
-  }
-  //return Cell with image
-  imageCell = function (imageURL) {
-    var cell = document.createElement("td");
-    var image = document.createElement("img");
-    image.height = 15;
-    image.weight = 15;
-    image.src = imageURL;
-    cell.appendChild(image);
-    return cell;
   }
   //returns cell with url, url opens in new tab
   urlCell = function (url) {
@@ -108,6 +97,6 @@
 
     var change = document.getElementById('change');
     change.onclick = doSubmit;
-    display(null, false);
+    doSubmit();
   }, false);
 })();
