@@ -8,36 +8,30 @@
     <body>
         <h1>Browser Tracker</h1>
         <div class = "switch">
-        <form name= "days" class = "quality" >
-            <input type="radio" id="radio1" name="time" value="1" checked>
-            <label for="radio1">Day</label>
-         <input type="radio" id="radio2" name="time"value="7">
-            <label for="radio2">Week</label>
-         <input type="radio" id="radio3" name="time" value="30">
-            <label for="radio3">Month</label>
-          </form>
+            <form name= "days" class = "quality" >
+                <input type="radio" id="radio1" name="time" value="1" checked>
+                <label for="radio1">Day</label>
+                <input type="radio" id="radio2" name="time"value="7">
+                <label for="radio2">Week</label>
+                <input type="radio" id="radio3" name="time" value="30">
+                <label for="radio3">Month</label>
+            </form>
         </div>
-          <div id = "websites">
+        <div id = "websites">
             <table id="stats">
                 <thead>
-                  <tr>
-                    <th scope="col"></th>
-                    <th scope="col">Site</th>
-                    <th scope="col">Time</th>
-                    <th scope="col">Visits</th>
-                  </tr>
+                    <tr>
+                        <th scope="col">Site</th>
+                        <th scope="col">Time</th>
+                        <th scope="col">Visits</th>
+                    </tr>
                 </thead>
                 <tbody id  = "stats_tbody", class = "this"></tbody>
-              </table>
-          </div>
-          <button type="button" id = "reset">Reset Statistics!</button>
-          <h3>Change Number of Websites Shown</h3>
-
-          <input type="number" id="views" min = "1" max = "20" value="2">
-          <button id="change">Change</button>
-        <p id="response"></p>
-        <!--
-            Input form & results table
-        -->
+            </table>
+        </div>
+        <button type="button" id = "reset">Reset Statistics</button>
+        <h3>Change Number of Websites Shown</h3>
+        <input type="number" id="views" min = "1" max = "20" value="5">
+        <button id="change">Change</button>
     </body>
 </html>
