@@ -10,6 +10,8 @@ var current = {
     tabURL: null
 }
 
+// --- Data Update Functions ---------------------------------------------------
+// logs initial page visit, with initial start time
 function log(url){
     var deferred = new $.Deferred();
 
@@ -39,6 +41,46 @@ function log(url){
     return deferred.promise();
 }
 
+//updates time for previous siteRecordID, then updates current.siteRecordID to current siteRecordID
+function updatePreviousAndSwitchToCurrent(siteRecordID) {
+    updateTime(current.siteRecordID); //aka send current time to server
+    console.log("setting current.siteRecordID to " + siteRecordID);
+    current.siteRecordID = siteRecordID || null;
+};
+
+//sends updated "end" time for current.siteRecordID, if current.siteRecordID is not null
+function updateTime(siteRecordID) {
+    if (!current.siteRecordID) return;
+
+    var data = JSON.stringify({
+        siteRecordID: siteRecordID,
+        time: Date.now()
+    });
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", config.server + "/update");
+    xhr.send(data);
+}
+
+//updates with current tab -- used if current tab url isn't straightforward to
+//determine in the context that this function is being called from
+function updateTimeWithCurrentTab() {
+    chrome.tabs.query({active: true, lastFocusedWindow: true}, function(tabs) {
+        if (tabs.length == 1) {
+            var url = tabs[0].url;
+            var data = JSON.stringify({ url: url,});
+            var xhr = new XMLHttpRequest();
+
+            //use POST because I didn't want to send url as parameter in request url
+            xhr.open("POST", config.server + "/recordID");
+            xhr.onload = function() {
+                updatePreviousAndSwitchToCurrent(JSON.parse(xhr.response).siteRecordID);
+            }
+            xhr.send(data);
+        }
+    });
+};
+
+// --- Event Listeners ---------------------------------------------------------
 chrome.tabs.onActivated.addListener(function (activeInfo) {
     console.log("onActivated");
     chrome.tabs.get(activeInfo.tabId, function(tab) {
@@ -82,6 +124,14 @@ chrome.windows.onFocusChanged.addListener(function (windowId) {
     }
 });
 
+chrome.idle.onStateChanged.addListener(function(idleState) {
+    console.log("idle.onStateChanged");
+    if (idleState == "locked") {
+        updatePreviousAndSwitchToCurrent(null);
+    }
+});
+
+// --- Update At Intervals -----------------------------------------------------
 setInterval(function() {
     console.log("interval");
     chrome.windows.getCurrent(function(window) {
@@ -94,49 +144,3 @@ setInterval(function() {
         }
     });
 }, config.updateTimeSeconds * 1000);
-
-chrome.idle.onStateChanged.addListener(function(idleState) {
-    console.log("idle.onStateChanged");
-    if (idleState == "locked") {
-        updatePreviousAndSwitchToCurrent(null);
-    }
-});
-
-//updates time for previous siteRecordID, then updates current.siteRecordID to current siteRecordID
-function updatePreviousAndSwitchToCurrent(siteRecordID) {
-    updateTime(current.siteRecordID); //aka send current time to server
-    console.log("setting current.siteRecordID to " + siteRecordID);
-    current.siteRecordID = siteRecordID || null;
-};
-
-//sends updated "end" time for current.siteRecordID, if current.siteRecordID is not null
-function updateTime(siteRecordID) {
-    if (!current.siteRecordID) return;
-
-    var data = JSON.stringify({
-        siteRecordID: siteRecordID,
-        time: Date.now()
-    });
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", config.server + "/update");
-    xhr.send(data);
-}
-
-//updates with current tab -- used if current tab url isn't straightforward to
-//determine in the context that this function is being called from
-function updateTimeWithCurrentTab() {
-    chrome.tabs.query({active: true, lastFocusedWindow: true}, function(tabs) {
-        if (tabs.length == 1) {
-            var url = tabs[0].url;
-            var data = JSON.stringify({ url: url,});
-            var xhr = new XMLHttpRequest();
-
-            //use POST because I didn't want to send url as parameter in request url
-            xhr.open("POST", config.server + "/recordID");
-            xhr.onload = function() {
-                updatePreviousAndSwitchToCurrent(JSON.parse(xhr.response).siteRecordID);
-            }
-            xhr.send(data);
-        }
-    });
-};
